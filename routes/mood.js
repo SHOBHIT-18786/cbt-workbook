@@ -178,5 +178,55 @@ router.delete("/mood-tracker/:date", isAuthenticated, async (req, res) => {
     }
 });
 
+// HTMX partial for Mood widget on dashboard
+router.get("/partials/dashboard/mood-widget", isAuthenticated, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT mood_rating, energy_level, context, mood_date, created_at
+             FROM mood.entries
+             WHERE user_id = $1
+             ORDER BY mood_date DESC, created_at DESC
+             LIMIT 1`,
+            [req.session.userId]
+        );
+        const latestMood = result.rows[0] || null;
+        res.render("partials/dashboard/mood-widget", { latestMood, time: new Date() });
+        return;
+    } catch (error) {
+        console.error("Error fetching latest mood for dashboard widget:", error);
+        res.status(500).send("");
+        return;
+    }
+});
+
+// API route to get calendar data for a specific month
+router.get("/api/mood-tracker/calendar/:year/:month", isAuthenticated, async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const month = parseInt(req.params.month) - 1; // Convert to 0-indexed month
+
+        // Validate year and month
+        if (isNaN(year) || isNaN(month) || month < 0 || month > 11) {
+            res.status(400).json({ error: "Invalid year or month" });
+            return;
+        }
+
+        // Get the dates with mood data
+        const datesWithMoodData = await getDatesWithMoodData(req.session.userId, year, month);
+
+        res.json({
+            success: true,
+            dates: datesWithMoodData
+        });
+        return;
+    } catch (error) {
+        console.error("Error fetching mood calendar data:", error);
+        res.status(500).json({
+            error: "Failed to fetch calendar data"
+        });
+        return;
+    }
+});
+
 module.exports = router;
 
