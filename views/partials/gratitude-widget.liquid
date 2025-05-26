@@ -1,0 +1,32 @@
+<div id="gratitude-widget" class="bg-gray-800 rounded-lg p-6 shadow-lg h-full htmx-widget">
+  <!-- {% currentUnixEpoch %} -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Section: Latest Entry -->
+    <div class="lg:col-span-1">
+      <h2 class="text-xl font-semibold text-purple-400 mb-4">Your Gratitude Journal</h2>
+      
+      {% if latestEntry %}
+        <div class="bg-gray-700 p-4 rounded-lg mb-4">
+          <div class="text-sm text-gray-400 mb-1">Latest Entry ({{ latestEntry.category }})</div>
+          <div class="text-sm text-white">{{ latestEntry.content | truncate: 150 }}</div>
+          <div class="flex justify-between items-center mt-3">
+            <span class="text-xs text-gray-400">{{ latestEntry.created_at | date: '%Y-%m-%d' }}</span>
+            {% if latestEntry.is_private %}
+              <span class="text-xs px-2 py-1 bg-gray-600 text-gray-300 rounded">Private</span>
+            {% else %}
+              <span class="text-xs px-2 py-1 bg-purple-600 text-white rounded">Public</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="mb-4 flex justify-between items-center">
+          <a href="/gratitude/view/{{ latestEntry.entry_id }}" class="text-sm text-purple-400 hover:text-purple-300">View Details</a>
+          <span class="text-xs text-gray-400">{{ totalEntries }} {% if totalEntries != 1 %}entries{% else %}entry{% endif %} total</span>
+        </div>
+      {% else %}
+        <p class="text-gray-300 mb-4">You haven't created any gratitude entries yet. Start by expressing gratitude for something in your life.</p>
+      {% endif %}
+      
+      <div class="mt-4">
+        <a href="/gratitude" class="block w-full bg-purple-500 text-center rounded-lg py-2 hover:bg-purple-600 transition">View All Entries</a>
+      </div>
+    </div>
