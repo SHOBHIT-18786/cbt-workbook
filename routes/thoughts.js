@@ -369,5 +369,68 @@ router.delete("/thought-record/:id", isAuthenticated, async (req, res) => {
     }
 });
 
+// HTMX partial for Thoughts widget on dashboard
+router.get("/partials/dashboard/thought-widget", isAuthenticated, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT record_id, situation, emotions, automatic_thoughts, created_at
+             FROM thought.records
+             WHERE user_id = $1
+             ORDER BY created_at DESC
+             LIMIT 1`,
+            [req.session.userId]
+        );
+        const latestThought = result.rows[0] || null;
+
+        // Get total count of thought records
+        const countResult = await pool.query(
+            `SELECT COUNT(*) as total 
+             FROM thought.records 
+             WHERE user_id = $1`,
+            [req.session.userId]
+        );
+        const totalRecords = parseInt(countResult.rows[0].total, 10);
+
+        res.render("partials/dashboard/thought-widget", {
+            latestThought,
+            totalRecords,
+            time: new Date()
+        });
+        return;
+    } catch (error) {
+        console.error("Error fetching latest thought for dashboard widget:", error);
+        res.status(500).send("");
+        return;
+    }
+});
+
+// API route to get calendar data for a specific month
+router.get("/api/thought-record/calendar/:year/:month", isAuthenticated, async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const month = parseInt(req.params.month) - 1; // Convert to 0-indexed month
+
+        // Validate year and month
+        if (isNaN(year) || isNaN(month) || month < 0 || month > 11) {
+            res.status(400).json({ error: "Invalid year or month" });
+            return;
+        }
+
+        // Get the dates with thought data
+        const datesWithThoughtData = await getDatesWithThoughtData(req.session.userId, year, month);
+
+        res.json({
+            success: true,
+            dates: datesWithThoughtData
+        });
+        return;
+    } catch (error) {
+        console.error("Error fetching thought calendar data:", error);
+        res.status(500).json({
+            error: "Failed to fetch calendar data"
+        });
+        return;
+    }
+});
 
 module.exports = router;
