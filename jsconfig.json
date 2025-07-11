@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "NodeNext",
+        "checkJs": true,
+        "allowJs": true,
+        "strict": false,
+        "moduleResolution": "NodeNext",
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "node_modules/*"
+            ]
+        },
+        "declaration": true,
+        "declarationDir": "./types"
+    },
+    "exclude": [
+        "node_modules",
+        "public/scripts"
+    ]
+}
