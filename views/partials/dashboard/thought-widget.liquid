@@ -1,0 +1,38 @@
+<div id="thought-widget" class="bg-gray-800 rounded-lg p-6 shadow-lg h-full flex flex-col htmx-widget">
+  <!-- {% currentUnixEpoch %} -->
+  <h2 class="text-xl font-semibold text-purple-400 mb-4">Thought Records</h2>
+  {% if latestThought %}
+    <div>
+      <div class="bg-gray-700 p-4 rounded-lg mb-4">
+        <div class="text-sm text-gray-400 mb-1">Recent Situation</div>
+        <div class="text-sm text-white">{{ latestThought.situation | truncate: 100 }}</div>
+      </div>
+      
+      <div class="bg-gray-700 p-4 rounded-lg mb-4">
+        <div class="text-sm text-gray-400 mb-1">Automatic Thoughts</div>
+        <div class="text-sm text-white">{{ latestThought.automatic_thoughts | truncate: 80 }}</div>
+      </div>
+      
+      <div class="mb-2 text-sm">
+        <span class="text-gray-400">Emotions:</span> 
+        {% for emotion in latestThought.emotions %}
+          {{ emotion }}{% if latestThought.emotion_intensity[forloop.index0] %}({{ latestThought.emotion_intensity[forloop.index0] }}){% endif %}{% if forloop.last == false %}, {% endif %}
+        {% endfor %}
+      </div>
+      
+      <div class="text-xs text-gray-400 mb-2">
+        Logged on {{ latestThought.created_at | date: '%Y-%m-%d' }}
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <a href="/thought-record/view/{{ latestThought.record_id }}" class="text-sm text-purple-400 hover:text-purple-300">View Details</a>
+        <span class="text-xs text-gray-400">{{ totalRecords }} record{% if totalRecords != 1 %}s{% endif %} total</span>
+      </div>
+    </div>
+  {% else %}
+    <p class="text-gray-300 mb-4">You haven't created any thought records yet. Identify and challenge negative thoughts to improve your mood.</p>
+  {% endif %}
+  <div class="mt-auto pt-4">
+    <a href="/thought-record" class="block w-full bg-purple-500 text-center rounded-lg py-2 hover:bg-purple-600 transition">Record Thoughts</a>
+  </div>
+</div>

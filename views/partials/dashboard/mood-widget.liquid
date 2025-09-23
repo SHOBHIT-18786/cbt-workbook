@@ -1,0 +1,29 @@
+<div id="mood-widget" class="bg-gray-800 rounded-lg p-6 shadow-lg h-full flex flex-col">
+  <!-- {% currentUnixEpoch %} -->
+  <h2 class="text-xl font-semibold text-purple-400 mb-4">Mood Tracker</h2>
+  {% if latestMood %}
+    <div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-gray-700 p-4 rounded-lg text-center">
+          <div class="text-sm text-gray-400">Mood</div>
+          <div class="mt-1 text-3xl font-bold text-purple-400">{{ latestMood.mood_rating }}/10</div>
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg text-center">
+          <div class="text-sm text-gray-400">Energy</div>
+          <div class="mt-1 text-3xl font-bold text-purple-400">{{ latestMood.energy_level }}/10</div>
+        </div>
+      </div>
+      <div class="bg-gray-700 p-3 rounded-lg mb-4">
+        <div class="text-sm text-gray-400 mb-1">Context</div>
+        <div class="text-sm text-white">{{ latestMood.context | default: 'No context provided' }}</div>
+      </div>
+      <div class="text-xs text-gray-400 mb-2">Logged on {{ latestMood.created_at | date: '%Y-%m-%d' }}</div>
+      <a href="/mood-tracker/{{ latestMood.mood_date | date: '%Y-%m-%d' }}" class="text-sm text-purple-400 hover:text-purple-300">View Details</a>
+    </div>
+  {% else %}
+    <p class="text-gray-300 mb-4">You haven't logged any moods yet. Track your daily mood and energy levels to identify patterns.</p>
+  {% endif %}
+  <div class="mt-auto pt-4">
+    <a href="/mood-tracker" class="block w-full bg-purple-500 text-center rounded-lg py-2 hover:bg-purple-600 transition">Track Mood</a>
+  </div>
+</div>
