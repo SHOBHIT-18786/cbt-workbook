@@ -65,7 +65,7 @@ router.post('/register', isNotAuthenticated, async (req, res) => {
       req.session.username = result.rows[0].username;
       req.session.email = result.rows[0].email;
 
-      req.flash('success', Welcome, ${username}! Your account has been created.);
+      req.flash('success', `Welcome, ${username}! Your account has been created.`);
       return res.redirect('/');
 
     } else {
@@ -105,7 +105,7 @@ router.post('/login', isNotAuthenticated, async (req, res) => {
       req.session.username = user.username;
       req.session.email = user.email;
 
-      req.flash('success', Welcome back, ${user.username}!);
+      req.flash('success', `Welcome back, ${user.username}!`);
       return res.redirect('/');
     } else {
       req.flash('error', 'Invalid credentials');
