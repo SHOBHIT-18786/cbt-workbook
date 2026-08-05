@@ -30,7 +30,7 @@ async function getUserGratitudeEntries(userId, page = 1, limit = 10) {
 
     // Get total count for pagination
     const countResult = await pool.query(
-        SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1,
+        `SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1`,
         [userId]
     );
 
@@ -75,7 +75,7 @@ async function getCommunityBoardEntries(userId, page = 1, limit = 10) {
 
     // Get total count for pagination with materialized query
     const countResult = await pool.query(
-        SELECT COUNT(*) as total FROM gratitude.board_entries WHERE approval_status = 'approved'
+        `SELECT COUNT(*) as total FROM gratitude.board_entries WHERE approval_status = 'approved'`
     );
 
     return {
@@ -225,7 +225,7 @@ router.post("/gratitude/new", isAuthenticated, upload.single('media_file'), asyn
                 const latestEntry = latestEntries.length > 0 ? latestEntries[0] : null;
 
                 const countResult = await pool.query(
-                    SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1,
+                    `SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1`,
                     [req.session.userId]
                 );
                 const totalEntries = parseInt(countResult.rows[0].total, 10);
@@ -283,7 +283,7 @@ router.post("/gratitude/new", isAuthenticated, upload.single('media_file'), asyn
             const latestEntry = latestEntries.length > 0 ? latestEntries[0] : null;
 
             const countResult = await pool.query(
-                SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1,
+                `SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1`,
                 [req.session.userId]
             );
             const totalEntries = parseInt(countResult.rows[0].total, 10);
@@ -312,7 +312,7 @@ router.post("/gratitude/new", isAuthenticated, upload.single('media_file'), asyn
             const latestEntry = latestEntries.length > 0 ? latestEntries[0] : null;
 
             const countResult = await pool.query(
-                SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1,
+                `SELECT COUNT(*) as total FROM gratitude.entries WHERE user_id = $1`,
                 [req.session.userId]
             );
             const totalEntries = parseInt(countResult.rows[0].total, 10);
@@ -369,7 +369,7 @@ router.get("/gratitude/edit/:id", isAuthenticated, async (req, res) => {
         res.render("gratitude-form", {
             title: "Edit Gratitude Entry | CBT Workbook",
             entry: entry,
-            formAction: /gratitude/edit/${entryId}
+            formAction: `/gratitude/edit/${entryId}`
         });
     } catch (error) {
         console.error("Error fetching gratitude entry for editing:", error);
@@ -387,7 +387,7 @@ router.post("/gratitude/edit/:id", isAuthenticated, upload.single('media_file'),
         // Validate required fields
         if (!content || !category) {
             req.flash("error", "Content and category are required.");
-            return res.redirect(/gratitude/edit/${entryId});
+            return res.redirect(`/gratitude/edit/${entryId}`);
         }
 
         // Get current entry state
@@ -431,7 +431,7 @@ router.post("/gratitude/edit/:id", isAuthenticated, upload.single('media_file'),
             if (!currentEntry.is_private && isPrivate) {
                 // Changed from public to private, remove from board
                 await client.query(
-                    DELETE FROM gratitude.board_entries WHERE entry_id = $1,
+                    `DELETE FROM gratitude.board_entries WHERE entry_id = $1`,
                     [entryId]
                 );
             } else if (currentEntry.is_private && !isPrivate) {
@@ -456,7 +456,7 @@ router.post("/gratitude/edit/:id", isAuthenticated, upload.single('media_file'),
     } catch (error) {
         console.error("Error updating gratitude entry:", error);
         req.flash("error", "Failed to update gratitude entry. Please try again.");
-        return res.redirect(/gratitude/edit/${req.params.id});
+        return res.redirect(`/gratitude/edit/${req.params.id}`);
     }
 });
 
